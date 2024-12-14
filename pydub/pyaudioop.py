@@ -529,20 +529,42 @@ def ratecv(cp, size, nchannels, inrate, outrate, state, weightA=1, weightB=0):
             d -= inrate
 
 
+def sign(num):
+    return -1 if num < 0 else 0 if num == 0 else 1
+
+
 def lin2ulaw(cp, size):
-    raise NotImplementedError()
+    maxval = _get_maxval(size)
+    return [sign(sample/maxval)*math.log(1+255*math.abs(sample/maxval))/math.log(1+255) for sample in _get_samples(cp, size)] 
 
 
 def ulaw2lin(cp, size):
-    raise NotImplementedError()
+    maxval = _get_maxval(size)
+    return[(sign(sample)*((1+255)**math.abs(sample)-1)/255)*maxval for sample in _get_samples(cp, size)]
 
 
 def lin2alaw(cp, size):
-    raise NotImplementedError()
+    maxval = _get_maxval(size)
+    alawvals = []
+    for sample in _get_samples(cp, size):
+        if math.abs(sample/maxval) < 1/87.6:
+            alawvals.append(87.6*math.abs(sample/maxval)/(1+math.log(87.6)))
+        else:
+            alawvals.append((1+math.log(87.6*math.abs(sample/maxval)))/(1+math.log(87.6)))
+        alawvals[-1] = sign(sample/maxval) * alawvals[-1]
+    return alawvals
 
 
 def alaw2lin(cp, size):
-    raise NotImplementedError()
+    maxval = _get_maxval(size)
+    linvals = []
+    for sample in _get_samples(cp, size):
+        if math.abs(sample) < 1/(1+math.log(87.6)):
+            linvals.append(math.abs(sample)*(1+math.log(87.6))/87.6)
+        else:
+            linvals.append(math.e**(-1+math.abs(sample)*(1+math.log(87.6)))/87.6)
+        linvals[-1] = sign(sample) * linvals[-1] * maxval
+    return linvals
 
 
 def lin2adpcm(cp, size, state):
