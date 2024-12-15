@@ -535,31 +535,31 @@ def sign(num):
 
 def lin2ulaw(cp, size):
     maxval = _get_maxval(size)
-    result = create_string_buffer(len(cp) / size)
+    result = create_string_buffer(len(cp))
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
         val = sign(sample/maxval)*math.log(1+255*math.abs(sample/maxval))/math.log(1+255)
-        _put_sample(result, 1, i, val)
+        _put_sample(result, size, i, val)
         
     return result
 
 
 def ulaw2lin(cp, size):
-    maxval = _get_maxval(2)
-    result = create_string_buffer(len(cp) / size * 2)
+    maxval = _get_maxval(size)
+    result = create_string_buffer(len(cp))
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
-        val = (sign(sample)*((1+255)**math.abs(sample)-1)/255)*maxval
-        _put_sample(result, 2, i, val)
+        val = (sign(sample)*((1+255)**math.abs(sample)-1)/255) * maxval
+        _put_sample(result, size, i, val)
         
     return result
 
 
 def lin2alaw(cp, size):
     maxval = _get_maxval(size)
-    result = create_string_buffer(len(cp) / size)
+    result = create_string_buffer(len(cp))
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
@@ -568,14 +568,14 @@ def lin2alaw(cp, size):
             val = sign(sample/maxval)*87.6*math.abs(sample/maxval)/(1+math.log(87.6))
         else:
             val = sign(sample/maxval)*(1+math.log(87.6*math.abs(sample/maxval)))/(1+math.log(87.6)) 
-        _put_sample(result, 1, i, val)
+        _put_sample(result, size, i, val)
         
     return result
 
 
 def alaw2lin(cp, size):
     maxval = _get_maxval(size)
-    result = create_string_buffer(len(cp) / size * 2)
+    result = create_string_buffer(len(cp))
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
@@ -583,8 +583,8 @@ def alaw2lin(cp, size):
         if math.abs(sample) < 1/(1+math.log(87.6)):
             val = sign(sample) * math.abs(sample)*(1+math.log(87.6))/87.6 * maxval
         else:
-            val = sign(sample) * (math.e**(-1+math.abs(sample)*(1+math.log(87.6))))/87.6 * maxval
-        _put_sample(result, 1, i, val)
+            val = sign(sample) * (math.e**(-1+math.abs(sample)*(1+math.log(87.6)))) / 87.6 * maxval
+        _put_sample(result, size, i, val)
         
     return result
 
