@@ -29,7 +29,7 @@ def _check_params(length, size):
 
 
 def _sample_count(cp, size):
-    return len(cp) / size
+    return len(cp) // size
 
 
 def _get_samples(cp, size, signed=True):
