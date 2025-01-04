@@ -529,7 +529,7 @@ def ratecv(cp, size, nchannels, inrate, outrate, state, weightA=1, weightB=0):
             d -= inrate
 
 
-def sign(num):
+def _sign(num):
     return -1 if num < 0 else 0 if num == 0 else 1
 
 
@@ -539,7 +539,7 @@ def lin2ulaw(cp, size):
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
-        val = sign(sample/maxval)*math.log(1+255*math.abs(sample/maxval))/math.log(1+255)
+        val = _sign(sample/maxval)*math.log(1+255*math.abs(sample/maxval))/math.log(1+255)
         _put_sample(result, size, i, val)
         
     return result
@@ -551,7 +551,7 @@ def ulaw2lin(cp, size):
     
     for i in range(_sample_count(cp, size)):
         sample = _get_sample(cp, size, i)
-        val = (sign(sample)*((1+255)**math.abs(sample)-1)/255) * maxval
+        val = (_sign(sample)*((1+255)**math.abs(sample)-1)/255) * maxval
         _put_sample(result, size, i, val)
         
     return result
@@ -565,9 +565,9 @@ def lin2alaw(cp, size):
         sample = _get_sample(cp, size, i)
         val = None
         if math.abs(sample/maxval) < 1/87.6:
-            val = sign(sample/maxval)*87.6*math.abs(sample/maxval)/(1+math.log(87.6))
+            val = _sign(sample/maxval)*87.6*math.abs(sample/maxval)/(1+math.log(87.6))
         else:
-            val = sign(sample/maxval)*(1+math.log(87.6*math.abs(sample/maxval)))/(1+math.log(87.6)) 
+            val = _sign(sample/maxval)*(1+math.log(87.6*math.abs(sample/maxval)))/(1+math.log(87.6)) 
         _put_sample(result, size, i, val)
         
     return result
@@ -581,9 +581,9 @@ def alaw2lin(cp, size):
         sample = _get_sample(cp, size, i)
         val = None
         if math.abs(sample) < 1/(1+math.log(87.6)):
-            val = sign(sample) * math.abs(sample)*(1+math.log(87.6))/87.6 * maxval
+            val = _sign(sample) * math.abs(sample)*(1+math.log(87.6))/87.6 * maxval
         else:
-            val = sign(sample) * (math.e**(-1+math.abs(sample)*(1+math.log(87.6)))) / 87.6 * maxval
+            val = _sign(sample) * (math.e**(-1+math.abs(sample)*(1+math.log(87.6)))) / 87.6 * maxval
         _put_sample(result, size, i, val)
         
     return result
